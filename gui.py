@@ -15,6 +15,7 @@ class Make3DWindow:
         #self.window.resizable(False, False)
         self.image_path = image_path
         self.path_dir = path_dir
+        self.texture_path = None  # 이미지 경로 변수 추가
 
         # 부모 창 비활성화
         self.parent.attributes("-disabled", True)
@@ -58,7 +59,7 @@ class Make3DWindow:
             "sigmacolor": "75",
             "sigmaspace": "75",
             "Background": "255,255,255",
-            "Upscale_tile": "0"
+            "Upscale_tile": "800"
         }
         
         # 파라미터 입력창들
@@ -84,7 +85,7 @@ class Make3DWindow:
         self.enable_color_var = tk.BooleanVar(value=True)
         self.enable_color_check = tk.Checkbutton(
             top_checks_frame, 
-            text="Add color texture",
+            text="Use color texture",
             variable=self.enable_color_var
         )
         self.enable_color_check.pack(side=tk.LEFT, fill=tk.X, padx=5, pady=(5, 0))
@@ -155,21 +156,61 @@ class Make3DWindow:
         self.upscale_model_combo.set('RealESRGAN_x4plus')  # 기본값 설정
         self.upscale_model_combo.pack(padx=5, pady=5, fill=tk.X)
         
+        
         # 경로 선택 프레임
         self.path_frame = tk.Frame(self.config_frame)
         self.path_frame.pack(fill=tk.X, pady=(0, 10))
+
+        # 텍스처 프레임 (새로 추가)
+        self.texture_frame = tk.Frame(self.path_frame)
+        self.texture_frame.pack(fill=tk.X, pady=5)
+        
+        # 텍스처 경로 프레임 (새로 추가)
+        self.texture_dir_frame = tk.Frame(self.path_frame)
+        self.texture_dir_frame.pack(fill=tk.X, pady=5)
+
+        # 출력 경로 프레임 (새로 추가)
+        self.output_frame = tk.Frame(self.path_frame)
+        self.output_frame.pack(fill=tk.X, pady=5)
+
+        # 이미지 추가 버튼
+        self.add_texture_button = tk.Button(
+            self.texture_frame,  # texture_frame으로 변경
+            text="Add Texture",
+            command=self.load_image,
+            width=10
+        )
+        self.add_texture_button.pack(side=tk.LEFT, padx=5)
+
+        # 텍스처 경로 표시 라벨
+        self.texture_label = tk.Label(self.texture_frame, text="No color Texture selected. Use the default. ", anchor='w')
+        self.texture_label.pack(side=tk.LEFT, padx=(10, 0), fill=tk.X, expand=True)
+        
+        # 텍스쳐 시퀸스 경로 선택 버튼
+        self.texture_dir = None
+        self.texture_dir_button = tk.Button(
+            self.texture_dir_frame,  # output_frame으로 변경
+            text="Select Texture directory",
+            command=self.select_texture_directory
+        )
+        self.texture_dir_button.pack(side=tk.LEFT, padx=5)
+
+        # 텍스쳐 시퀸스 경로 표시 라벨
+        self.texture_dir_label = tk.Label(self.texture_dir_frame, text="No Texture Directory selected", anchor='w')
+        self.texture_dir_label.pack(side=tk.LEFT, padx=(10, 0), fill=tk.X, expand=True)
+        
         
         # 경로 선택 버튼
-        self.out_dir = None  # 경로 저장 변수
+        self.out_dir = None
         self.path_button = tk.Button(
-            self.path_frame,
+            self.output_frame,  # output_frame으로 변경
             text="Select Output Directory",
             command=self.select_output_directory
         )
-        self.path_button.pack(side=tk.LEFT, padx=5, pady=5)
-        
+        self.path_button.pack(side=tk.LEFT, padx=5)
+
         # 경로 표시 라벨
-        self.path_label = tk.Label(self.path_frame, text="No directory selected. Use the default path /output. ", anchor='w')
+        self.path_label = tk.Label(self.output_frame, text="No directory selected. Use the default path /output. ", anchor='w')
         self.path_label.pack(side=tk.LEFT, padx=(10, 0), fill=tk.X, expand=True)
         
         # 실행 버튼
@@ -181,8 +222,28 @@ class Make3DWindow:
         self.run_button.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=5)
         
         # 이미지 표시
-        self.display_image(image)
+        if image:
+            self.display_image(image)
+    
+    def load_image(self):
+        file_path = filedialog.askopenfilename(
+            filetypes=[
+                ("Image files", "*.png *.jpg *.jpeg *.gif *.bmp"),
+                ("All files", "*.*")
+            ]
+        )
         
+        if file_path:
+            image = Image.open(file_path)
+            self.current_image = image
+            self.texture_path = file_path  # 이미지 경로 저장
+            self.texture_label.config(text=self.texture_path)  # 경로 라벨에 선택된 경로 표시        
+            print("Use texture:", self.texture_path)
+            
+        # 경로 선택 후 최상단 설정 다시 적용
+        self.window.lift()
+        self.window.focus_force()
+
     def display_image(self, image):
         # 이미지 크기 조정
         display_size = (230, 230)  # 여백을 위해 프레임보다 작게 설정
@@ -228,6 +289,18 @@ class Make3DWindow:
         self.window.lift()
         self.window.focus_force()
         
+    def select_texture_directory(self):
+        # 텍스쳐 경로 선택 대화 상자 열기
+        directory = filedialog.askdirectory()
+        if directory:
+            self.texture_dir = directory  # 선택된 경로 저장
+            self.texture_dir_label.config(text=self.texture_dir)  # 경로 라벨에 선택된 경로 표시
+            print("Texture directory selected:", self.texture_dir)
+        
+        # 경로 선택 후 최상단 설정 다시 적용
+        self.window.lift()
+        self.window.focus_force()
+        
     def generate_3d(self):
         # 파라미터 값들 가져오기
         params = {name: entry.get() for name, entry in self.params.items()}
@@ -253,6 +326,9 @@ class Make3DWindow:
             print("Upscale Model:", self.upscale_model_var.get())
         print("Use Path:", self.use_path_var.get())
         print("Save gITF:", self.save_mesh_var.get())
+        if self.texture_path is not None :
+            print("Use Color texture:", self.texture_path)
+        
         print("===========================================Gernerate 3D ===================================================")
         
         if self.use_path_var.get():
@@ -271,6 +347,11 @@ class Make3DWindow:
                 else:
                     for filename in sorted(os.listdir(self.path_dir)):
                         file_path = os.path.join(self.path_dir, filename)
+                        if self.texture_dir is not None:
+                            texture_path = os.path.join(self.texture_dir, filename)
+                        else :
+                            texture_path = None
+                              
                         if os.path.isfile(file_path) and file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
                             print("Processing image:", file_path)
 
@@ -293,7 +374,8 @@ class Make3DWindow:
                                 str(self.upscale_model_var.get()),
                                 self.save_mesh_var.get(),
                                 self.use_path_var.get(),
-                                int(self.params["Upscale_tile"].get())
+                                int(self.params["Upscale_tile"].get()),
+                                texture_path
                             )
 
                             # 미리보기 이미지 표시
@@ -321,7 +403,8 @@ class Make3DWindow:
                     str(self.upscale_model_var.get()),
                     self.save_mesh_var.get(),
                     self.use_path_var.get(),
-                    int(self.params["Upscale_tile"].get())
+                    int(self.params["Upscale_tile"].get()),
+                    self.texture_path
                 )
                 
                 # 미리보기 이미지 표시
