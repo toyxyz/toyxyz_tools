@@ -216,7 +216,7 @@ class Make3DWindow:
         # 실행 버튼
         self.run_button = tk.Button(
             self.config_frame,
-            text="Run",
+            text="Generate",
             command=self.generate_3d
         )
         self.run_button.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=5)
