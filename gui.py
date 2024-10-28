@@ -325,7 +325,7 @@ class Make3DWindow:
         if self.upscale_normal_var.get():
             print("Upscale Model:", self.upscale_model_var.get())
         print("Use Path:", self.use_path_var.get())
-        print("Save gITF:", self.save_mesh_var.get())
+        print("Save glTF:", self.save_mesh_var.get())
         if self.texture_path is not None :
             print("Use Color texture:", self.texture_path)
         
