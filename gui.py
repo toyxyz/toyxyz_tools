@@ -216,7 +216,7 @@ class Make3DWindow:
         # 실행 버튼
         self.run_button = tk.Button(
             self.config_frame,
-            text="Generate 3D",
+            text="Run",
             command=self.generate_3d
         )
         self.run_button.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=5)
@@ -458,7 +458,7 @@ class ImageViewer:
         # Make 3D 버튼
         self.make_3d_button = tk.Button(
             self.button_frame,
-            text="Make 3D",
+            text="D2N",
             command=self.make_3d,
             width=10,
             state=tk.DISABLED
