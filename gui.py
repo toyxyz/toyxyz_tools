@@ -190,7 +190,7 @@ class Make3DWindow:
         self.texture_dir = None
         self.texture_dir_button = tk.Button(
             self.texture_dir_frame,  # output_frame으로 변경
-            text="Select Texture directory",
+            text="Select Texture Directory",
             command=self.select_texture_directory
         )
         self.texture_dir_button.pack(side=tk.LEFT, padx=5)
