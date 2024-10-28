@@ -6,5 +6,6 @@ basicsr @ git+https://github.com/XPixelGroup/BasicSR@8d56e3a045f9fb3e1d8872f92ee
 numpy
 pillow
 opencv-python
+huggingface_hub
 torch
 torchvision
