@@ -14,7 +14,7 @@ from depth_anything_v2.dpt import DepthAnythingV2
 
 import upscale
 
-def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, normal_min, mat_metallic, mat_roughness, normal_blur, blur_sigmacolor, blur_sigmaspace, depth_encoder, bg_color, enable_texture, show_preview, upscale_normal, upscale_model, save_mesh, use_path, tile_n):
+def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, normal_min, mat_metallic, mat_roughness, normal_blur, blur_sigmacolor, blur_sigmaspace, depth_encoder, bg_color, enable_texture, show_preview, upscale_normal, upscale_model, save_mesh, use_path, tile_n, texture_path):
 
 
     # determine model paths
@@ -189,11 +189,16 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
         
     #3D
     
+    #if use_path is False :
+    if texture_path is not None :
+        image_path = str(texture_path)
+    
     if save_mesh:
         
         color_tex = image_path # Get Color texture
         normal_tex = normal_image_path # Get normal texture
-        depth_tex = depth_image_path # Get depth texture 
+        depth_tex = depth_image_path # Get depth texture
+        extra_color_text = str(texture_path)
 
         # GLTF 객체 생성
         gltf = GLTF2()
