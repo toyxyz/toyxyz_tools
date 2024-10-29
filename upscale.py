@@ -7,7 +7,7 @@ from basicsr.utils.download_util import load_file_from_url
 from realesrgan import RealESRGANer
 from realesrgan.archs.srvgg_arch import SRVGGNetCompact
 
-def upscale_image(input_dir, out_dir, model_name, tile_num):
+def upscale_image(input_dir, out_dir, model_name, tile_num, use_path, save_image):
         
     input_path = input_dir
     
@@ -19,7 +19,7 @@ def upscale_image(input_dir, out_dir, model_name, tile_num):
     
     model_path_p = None
     
-    suffix = "_up"
+    suffix = ""
     
     tile_n = tile_num
     
@@ -36,6 +36,10 @@ def upscale_image(input_dir, out_dir, model_name, tile_num):
     ext = 'auto'
     
     gpu_id_n = None
+    
+    save_path = None
+    
+    output = None
 
     # determine models according to model names
     model_name = model_name.split('.')[0]
@@ -147,6 +151,9 @@ def upscale_image(input_dir, out_dir, model_name, tile_num):
                 save_path = os.path.join(output_path, f'{imgname}.{extension}')
             else:
                 save_path = os.path.join(output_path, f'{imgname}_{suffix}.{extension}')
-            cv2.imwrite(save_path, output)
-            
-    return save_path
+            if save_image:
+                cv2.imwrite(save_path, output)
+    if use_path:        
+        return save_path
+    else:
+        return output
