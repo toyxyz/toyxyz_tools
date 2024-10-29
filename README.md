@@ -13,10 +13,34 @@ ComfyUI version : https://github.com/toyxyz/ComfyUI_toyxyz_test_nodes
 
 ![image](https://github.com/user-attachments/assets/1b7f2ae4-f32a-4c06-882b-99c16bde8ccc)
 
+## Example
+
+Blender
 ![image](https://github.com/user-attachments/assets/d1e62c7f-408c-46ae-ae2f-3b6b22c7660f)
 
+Clip studio paint
 ![image](https://github.com/user-attachments/assets/f1f92da0-f18f-43a4-b45c-643437c88684)
 
+![image](https://github.com/user-attachments/assets/bdd04a01-1d7d-4499-968f-0c952d71fb55)
+
+
+## Installation
+
+  git clone https://github.com/toyxyz/toyxyz_tools
+
+  cd toyxyz_tools
+
+  python -m venv venv
+
+  cd venv/Scripts
+
+  activate
+
+  pip install -r requirements.txt
+
+  !Install pytorch for the CUDA version installed on your machine. !
+
+  https://pytorch.org/get-started/locally/
 
 ## How to use
   
@@ -33,15 +57,15 @@ ComfyUI version : https://github.com/toyxyz/ComfyUI_toyxyz_test_nodes
 
 ## 1. D2N / Depth to normal 
 
-  ![image](https://github.com/user-attachments/assets/c09153ee-f805-4a68-a6bb-e6f165f6ef3d)
-
+  ![image](https://github.com/user-attachments/assets/7c8d95bd-28df-4e88-aa8a-484e20c760bf)
+  
   Generates a depth using the input image, generates a normal map from the depth, and exports a .gITF 3D file. 
 
   If the input image has an alpha channel, it will also be applied to the glTF material. 
 
   You can import it into programs like Blender, Unity, or Clip studio paint. 
 
-  ![image](https://github.com/user-attachments/assets/7c8d95bd-28df-4e88-aa8a-484e20c760bf)
+  ![image](https://github.com/user-attachments/assets/c09153ee-f805-4a68-a6bb-e6f165f6ef3d)
 
   Input_size: Specifies the resolution of the depth. Higher gives more detail, but uses more VRAM. 
 
@@ -117,6 +141,9 @@ ComfyUI version : https://github.com/toyxyz/ComfyUI_toyxyz_test_nodes
   Upscale_tile : Specifies the tile size to use for lineart upscaling. If you lack vram, use a lower value. If it's 0, no tiles are used.
 
   Threshold: Sets pixels above the threshold to black and pixels below to white. Lowering it increases detail. 
+
+  ![image](https://github.com/user-attachments/assets/1d032de5-4d4d-498d-a397-45907044ec05)
+
 
   Use Alpha: If the input image has an alpha channel, it will be applied to the line art image. 
 
