@@ -5,6 +5,18 @@ GUI with a collection of handy tools
 
 ![image](https://github.com/user-attachments/assets/067aba55-1ab1-4772-b909-9055cb2d7bb1)
 
+This tool is intended for use on 2D illustrative images where normal estimation does not work well. 
+
+Create a depth using Depthanything v2, and generate a normal map from the depth. 
+
+ComfyUI version : https://github.com/toyxyz/ComfyUI_toyxyz_test_nodes
+
+![image](https://github.com/user-attachments/assets/1b7f2ae4-f32a-4c06-882b-99c16bde8ccc)
+
+![image](https://github.com/user-attachments/assets/d1e62c7f-408c-46ae-ae2f-3b6b22c7660f)
+
+![image](https://github.com/user-attachments/assets/f1f92da0-f18f-43a4-b45c-643437c88684)
+
 
 ## How to use
   
@@ -17,7 +29,6 @@ GUI with a collection of handy tools
   Lineart: Creates line art from an image. 
 
 ![image](https://github.com/user-attachments/assets/63bf5813-5911-44f3-951e-2640ba46371e)
-
 
 
 ## 1. D2N / Depth to normal 
@@ -125,4 +136,8 @@ GUI with a collection of handy tools
 
   Generate : Generate start
 
+
+https://github.com/DepthAnything/Depth-Anything-V2
+
+https://github.com/xinntao/Real-ESRGAN
 
