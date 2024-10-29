@@ -106,10 +106,21 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
 
     depth_float32 = depth_array.astype(np.float32)
     
-    os.makedirs(out_dir, exist_ok=True)
-    base_name = os.path.splitext(os.path.basename(image_path))[0]  # 파일 이름에서 확장자 제거
-    base_name = os.path.join(out_dir, base_name)
-    depth_image_path = f"{base_name}_depth.tiff"  # 저장할 깊이 이미지의 이름
+    depth_folder = os.path.join(out_dir, "depth")
+    
+    normal_folder = os.path.join(out_dir, "normal")
+    
+    os.makedirs(depth_folder, exist_ok=True)
+    
+    os.makedirs(normal_folder, exist_ok=True)
+    
+    base_name = os.path.splitext(os.path.basename(image_path))[0]  # 파일 이름에서 확장자 경로 제거 
+    
+    depth_base_name = os.path.join(depth_folder, base_name)
+    
+    normal_base_name = os.path.join(normal_folder, base_name)
+    
+    depth_image_path = f"{depth_base_name}.tiff"  # 저장할 깊이 이미지의 이름
 
     if depth_float32.max() > 1.0:  # Check if the input is in [0, 255] range
         print("Input detected in [0, 255] range. Normalizing to [0, 1].")
@@ -178,15 +189,19 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
 
     outputs= outputs * 255.0
 
-    normal_image_path = f"{base_name}_normal.png"  # 저장할 노멀맵 이미지의 이름
+    normal_image_path = f"{normal_base_name}.png"  # 저장할 노멀맵 이미지의 이름
 
     # 시각화 및 저장
-    cv2.imwrite(normal_image_path, outputs)
+    
     
     if upscale_normal :
-        
-        normal_image_path = upscale.upscale_image(normal_image_path, out_dir, upscale_model, tile_n)
-        
+        temp_image_path = f"{base_name}_temp.png" # 임시 노멀맵 저장
+        cv2.imwrite(temp_image_path, outputs)
+        outputs = upscale.upscale_image(temp_image_path, out_dir, upscale_model, tile_n, False, False)
+        os.remove(temp_image_path)
+    
+    cv2.imwrite(normal_image_path, outputs)
+    
     #3D
     
     #if use_path is False :
@@ -437,16 +452,22 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
         gltf.accessors.append(accessor1)
         gltf.accessors.append(accessor2)
         gltf.accessors.append(texcoord_accessor)  # 텍스처 좌표 액세서 추가
-
-        # GLTF 파일 저장
-        gltf.save(f"{base_name}_3D.gltf")
         
-        print(f"Save {base_name}_3D.gltf")
+        gltf_folder = os.path.join(out_dir, "glTF")
+        
+        os.makedirs(gltf_folder, exist_ok=True)
+        
+        gltf_base_name = os.path.join(gltf_folder, base_name)
+        
+        # GLTF 파일 저장
+        gltf.save(f"{gltf_base_name}.gltf")
+        
+        print(f"Save {gltf_base_name}.gltf")
     
     if show_preview:
         # 뎁스 생성에 사용되는 이미지를 작은 윈도우로 표시
         Preview_display = cv2.resize(color_image_filled, (int(512*(width/height)), 512))
-        cv2.imshow('Image+Background', Preview_display)
+        cv2.imshow('Close to proceed', Preview_display)
         if use_path:
             cv2.waitKey(100)  # 윈도우를 업데이트하고 대기
         else :
