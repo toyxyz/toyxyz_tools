@@ -106,7 +106,9 @@ Clip studio paint
   It will automatically download the model. If you have any problems, download it from the path below and put it in toyxyz_tools/checkpoints. 
 
   https://huggingface.co/depth-anything/Depth-Anything-V2-Small/resolve/main/depth_anything_v2_vits.pth?download=true
+  
   https://huggingface.co/depth-anything/Depth-Anything-V2-Base/resolve/main/depth_anything_v2_vitb.pth?download=true
+  
   https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth?download=true
 
   Upscale Model Selection: Select the RealESRGAN model to use for upscaling. 
