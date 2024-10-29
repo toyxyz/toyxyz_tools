@@ -38,6 +38,10 @@ Clip studio paint
 
   pip install -r requirements.txt
 
+  cd ../..
+
+  gui.py
+
   !Install pytorch for the CUDA version installed on your machine. !
 
   https://pytorch.org/get-started/locally/
