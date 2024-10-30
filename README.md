@@ -26,6 +26,7 @@ Clip studio paint
 
 ## Installation
 
+```
   git clone https://github.com/toyxyz/toyxyz_tools
 
   cd toyxyz_tools
@@ -41,11 +42,12 @@ Clip studio paint
   pip install -r requirements.txt
 
   gui.py
+```
 
-  !Install pytorch for the CUDA version installed on your machine. !
-
+  Install pytorch for the CUDA version installed on your machine. !
+```
   https://pytorch.org/get-started/locally/
-
+```
 ## How to use
   
   Add Image: Select one image. 
