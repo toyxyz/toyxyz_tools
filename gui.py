@@ -12,7 +12,7 @@ class Make3DWindow:
         self.parent = parent
         self.window = tk.Toplevel(parent)
         self.window.title("Depth to Normal")
-        self.window.geometry("800x650")  # 크기 조정
+        self.window.geometry("800x740")  # 크기 조정
         #self.window.resizable(False, False)
         self.image_path = image_path
         self.path_dir = path_dir
@@ -56,11 +56,15 @@ class Make3DWindow:
             "normal_min": "0.000",
             "metallic": "0.0",
             "roughness": "1.0",
-            "blur": "11",
+            "blur": "21",
             "sigmacolor": "75",
             "sigmaspace": "75",
             "Background": "255,255,255",
-            "Upscale_tile": "800"
+            "Upscale_tile": "800",
+            "Detail_mult": "0.01",
+            "Detail_blur": "1",
+            "Blur_sigma": "1.0",
+            "Detail_RGB": "0.4, 0.4, 0.4"
         }
         
         # 파라미터 입력창들
@@ -126,6 +130,7 @@ class Make3DWindow:
             variable=self.save_mesh_var
         )
         self.save_mesh_check.pack(side=tk.LEFT, fill=tk.X, padx=5, pady=(5, 0))
+        
         
         # 모델 선택 프레임
         self.model_frame = tk.LabelFrame(self.config_frame, text="Depth Model Selection")
@@ -376,7 +381,11 @@ class Make3DWindow:
                                 self.save_mesh_var.get(),
                                 self.use_path_var.get(),
                                 int(self.params["Upscale_tile"].get()),
-                                texture_path
+                                texture_path,
+                                float(self.params["Detail_mult"].get()),
+                                int(self.params["Detail_blur"].get()),
+                                float(self.params["Blur_sigma"].get()),
+                                str(self.params["Detail_RGB"].get())
                             )
 
                             # 미리보기 이미지 표시
@@ -405,7 +414,11 @@ class Make3DWindow:
                     self.save_mesh_var.get(),
                     self.use_path_var.get(),
                     int(self.params["Upscale_tile"].get()),
-                    self.texture_path
+                    self.texture_path,
+                    float(self.params["Detail_mult"].get()),
+                    int(self.params["Detail_blur"].get()),
+                    float(self.params["Blur_sigma"].get()),
+                    str(self.params["Detail_RGB"].get())
                 )
                 
                 # 미리보기 이미지 표시
