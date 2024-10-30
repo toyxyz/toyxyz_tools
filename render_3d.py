@@ -14,7 +14,33 @@ from depth_anything_v2.dpt import DepthAnythingV2
 
 import upscale
 
-def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, normal_min, mat_metallic, mat_roughness, normal_blur, blur_sigmacolor, blur_sigmaspace, depth_encoder, bg_color, enable_texture, show_preview, upscale_normal, upscale_model, save_mesh, use_path, tile_n, texture_path):
+def convert_to_gray(image, weights):
+    
+    normalized = image.astype(np.float32) / 255.0
+    
+    gray_image = np.dot(normalized[..., :3], weights)
+    
+    gray_image = np.clip(gray_image, 0.0, 1.0)
+    
+    gray_image = (gray_image * 255).astype(np.uint8)
+    
+    gray_cv2 = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+    
+    return gray_image
+    
+def multiply_image(image_a, image_b, blend_factor):
+    
+    img1 = image_a.astype(np.float32) / 255.0  # 0-1 범위로 정규화
+    img2 = image_b.astype(np.float32) / 255.0
+    
+    blended_image = img1 * img2 # Multiply
+    
+    blended_image = img1 * (1 - blend_factor) + blended_image * blend_factor
+    
+    return blended_image
+
+
+def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, normal_min, mat_metallic, mat_roughness, normal_blur, blur_sigmacolor, blur_sigmaspace, depth_encoder, bg_color, enable_texture, show_preview, upscale_normal, upscale_model, save_mesh, use_path, tile_n, texture_path, detail_m, detail_b, detail_s, detail_c):
 
 
     # determine model paths
@@ -69,10 +95,21 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
     roughness = mat_roughness # roughness
     
 
-    # 깊이 맵 추정
+    # 이미지 불러오기
     color_image = PILImage.open(image_path).convert("RGB")
 
     alpha_image = PILImage.open(image_path).convert("RGBA")
+    
+    gray_color = tuple(map(float, detail_c.split(",")))
+    
+    # 그레이스케일 이미지로 변환
+    
+    gray_image =  convert_to_gray(np.array(color_image), gray_color)
+    
+    blur_k = detail_b + (1-(detail_b%2))
+    
+    # 블러 추가
+    gray_image = cv2.GaussianBlur(gray_image, (blur_k, blur_k), detail_s)
     
     # 배경 색상 선택
     background_color = tuple(map(int, bg_color.split(",")))
@@ -100,9 +137,14 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
     depth_out = (depth_out - depth_out.min()) / (depth_out.max() - depth_out.min()) * 255.0
 
     depth_array = depth_out
+    
+    if detail_m > 0 :
+    
+        depth_array = multiply_image(depth_array, gray_image, detail_m) #디테일 적용
+
 
     depth_array = depth_array * alpha_mask  # 알파 마스킹 적용
-
+    
 
     depth_float32 = depth_array.astype(np.float32)
     
