@@ -126,6 +126,9 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
         print("Input detected in [0, 255] range. Normalizing to [0, 1].")
         depth_float32 = depth_float32 / 255.0
     tifffile.imwrite(depth_image_path, depth_float32, photometric='minisblack', metadata=None,)
+    
+    torch.cuda.empty_cache()
+
 
 
     def get_surface_normal_by_depth(depth, depth_m, K=None):
@@ -201,6 +204,8 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
         os.remove(temp_image_path)
     
     cv2.imwrite(normal_image_path, outputs)
+    
+    torch.cuda.empty_cache()
     
     #3D
     
