@@ -74,7 +74,8 @@ Clip studio paint
 
   You can import it into programs like Blender, Unity, or Clip studio paint. 
 
-  ![image](https://github.com/user-attachments/assets/c09153ee-f805-4a68-a6bb-e6f165f6ef3d)
+  ![image](https://github.com/user-attachments/assets/1276dc39-c807-40f2-8576-d9b609224c21)
+
 
   Input_size: Specifies the resolution of the depth. Higher gives more detail, but uses more VRAM. 
 
@@ -95,6 +96,12 @@ Clip studio paint
   Background : Specifies the color to fill in the background if the input image has an alpha channel. It's more effective to use a color that contrasts with the color of the object.  
 
   Upscale_tile : Specifies the tile size to use for normal map upscaling. If you lack vram, use a lower value. If it's 0, no tiles are used.
+
+  Detail_mult : enhances the detail of the surface. Too high values make the image flat. Add 0.01 each.
+
+  Detail_blur/Blur_sigma : GaussianBlur for detail.
+
+  Detail_RGB : Specifies the RGB ratio to convert the original image to grayscale for detail. Red is black when R is 0.
 
   Use color texture : Specifies whether to apply color texture to the mesh. White is used when disabled.
 
