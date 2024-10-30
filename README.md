@@ -36,9 +36,9 @@ Clip studio paint
 
   activate
 
-  pip install -r requirements.txt
-
   cd ../..
+
+  pip install -r requirements.txt
 
   gui.py
 
