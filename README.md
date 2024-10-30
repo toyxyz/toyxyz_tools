@@ -39,15 +39,18 @@ Clip studio paint
 
   cd ../..
 
+```
+  Install pytorch for the CUDA version installed on your machine.
+
+  https://pytorch.org/get-started/locally/
+
+
+```
   pip install -r requirements.txt
 
   gui.py
 ```
 
-  Install pytorch for the CUDA version installed on your machine.
-```
-  https://pytorch.org/get-started/locally/
-```
 ## How to use
   
   Add Image: Select one image. 
