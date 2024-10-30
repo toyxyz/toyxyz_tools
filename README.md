@@ -99,7 +99,7 @@ Clip studio paint
 
   Detail_mult : enhances the detail of the surface. Too high values make the image flat. Add 0.01 each.
 
-  Detail_blur/Blur_sigma : GaussianBlur for detail.
+  Blur/Blur_sigma : GaussianBlur for detail.
 
   Detail_RGB : Specifies the RGB ratio to convert the original image to grayscale for detail. Red is black when R is 0.
 
