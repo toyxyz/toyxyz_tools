@@ -44,7 +44,7 @@ Clip studio paint
   gui.py
 ```
 
-  Install pytorch for the CUDA version installed on your machine. !
+  Install pytorch for the CUDA version installed on your machine.
 ```
   https://pytorch.org/get-started/locally/
 ```
