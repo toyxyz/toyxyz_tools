@@ -10,6 +10,5 @@ pillow
 pathlib
 opencv-python
 huggingface_hub
-torch
-torchvision
-xformers
+
+
