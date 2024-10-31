@@ -51,6 +51,11 @@ Clip studio paint
   gui.py
 ```
 
+If you want faster processing and less VRAM usage, install the appropriate version of xformers. 
+
+https://github.com/facebookresearch/xformers#installing-xformers
+
+
 ## How to use
   
   Add Image: Select one image. 
