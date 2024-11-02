@@ -12,7 +12,7 @@ class Make3DWindow:
         self.parent = parent
         self.window = tk.Toplevel(parent)
         self.window.title("Depth to Normal")
-        self.window.geometry("800x740")  # 크기 조정
+        self.window.geometry("800x900")  # 크기 조정
         #self.window.resizable(False, False)
         self.image_path = image_path
         self.path_dir = path_dir
@@ -31,7 +31,7 @@ class Make3DWindow:
         # 왼쪽 이미지 프레임
         self.image_frame = tk.Frame(self.main_frame, width=250, height=250)
         self.image_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 10))
-        self.image_frame.pack_propagate(False)  # 프레임 크기 고정
+        self.image_frame.pack_propagate(True)  # 프레임 크기 고정
         
         # 이미지 레이블
         self.image_label = tk.Label(self.image_frame)
@@ -54,11 +54,15 @@ class Make3DWindow:
             "input_size": "518",
             "normal_depth": "0.0",
             "normal_min": "0.000",
+            "Sobel_ratio":"0.1",
             "metallic": "0.0",
             "roughness": "1.0",
-            "blur": "21",
-            "sigmacolor": "75",
-            "sigmaspace": "75",
+            "bilateral_blur": "11",
+            "sigmacolor": "45",
+            "sigmaspace": "45",
+            "guided_blur": "4",
+            "loop": "10",
+            "eps":"16",
             "Background": "255,255,255",
             "Upscale_tile": "800",
             "Detail_mult": "0.01",
@@ -252,9 +256,21 @@ class Make3DWindow:
 
     def display_image(self, image):
         # 이미지 크기 조정
-        display_size = (230, 230)  # 여백을 위해 프레임보다 작게 설정
+        display_size = (768, 768)  # 여백을 위해 프레임보다 작게 설정
         image_copy = image.copy()
         image_copy.thumbnail(display_size, Image.Resampling.LANCZOS)
+        
+        # 이미지 크기 가져오기
+        image_width, image_height = image_copy.size
+        
+         # 창 너비를 이미지와 UI 요소가 모두 보이도록 조정
+        min_window_width = 800  # 기본 창 너비
+        required_width = image_width + 500  # 여유 공간을 더해 전체 창 크기 설정
+        
+        # 창 크기 자동 조정
+        new_width = max(min_window_width, required_width)
+        self.window.geometry(f"{new_width}x900")
+
         
         # PhotoImage로 변환
         photo = ImageTk.PhotoImage(image_copy)
@@ -272,9 +288,20 @@ class Make3DWindow:
             image = Image.fromarray(image)
 
         # 미리보기 이미지 크기 조정
-        display_size = (230, 230)  # 여백을 위해 프레임보다 작게 설정
+        display_size = (768, 768)  # 여백을 위해 프레임보다 작게 설정
         image_copy = image.copy()
         image_copy.thumbnail(display_size, Image.Resampling.LANCZOS)
+        
+        # 이미지 크기 가져오기
+        image_width, image_height = image_copy.size
+        
+         # 창 너비를 이미지와 UI 요소가 모두 보이도록 조정
+        min_window_width = 800  # 기본 창 너비
+        required_width = image_width + 500  # 여유 공간을 더해 전체 창 크기 설정
+        
+        # 창 크기 자동 조정
+        new_width = max(min_window_width, required_width)
+        self.window.geometry(f"{new_width}x900")
 
         # PhotoImage로 변환
         preview_photo = ImageTk.PhotoImage(image_copy)
@@ -369,7 +396,7 @@ class Make3DWindow:
                                 float(self.params["normal_min"].get()), 
                                 float(self.params["metallic"].get()), 
                                 float(self.params["roughness"].get()), 
-                                int(self.params["blur"].get()), 
+                                int(self.params["bilateral_blur"].get()), 
                                 float(self.params["sigmacolor"].get()), 
                                 float(self.params["sigmaspace"].get()), 
                                 selected_model,
@@ -385,7 +412,12 @@ class Make3DWindow:
                                 float(self.params["Detail_mult"].get()),
                                 int(self.params["Detail_blur"].get()),
                                 float(self.params["Blur_sigma"].get()),
-                                str(self.params["Detail_RGB"].get())
+                                str(self.params["Detail_RGB"].get()),
+                                float(self.params["Sobel_ratio"].get()),
+                                int(self.params["guided_blur"].get()),
+                                int(self.params["eps"].get()),
+                                int(self.params["loop"].get())
+                                
                             )
 
                             # 미리보기 이미지 표시
@@ -402,7 +434,7 @@ class Make3DWindow:
                     float(self.params["normal_min"].get()), 
                     float(self.params["metallic"].get()), 
                     float(self.params["roughness"].get()), 
-                    int(self.params["blur"].get()), 
+                    int(self.params["bilateral_blur"].get()), 
                     float(self.params["sigmacolor"].get()), 
                     float(self.params["sigmaspace"].get()), 
                     selected_model,
@@ -418,7 +450,11 @@ class Make3DWindow:
                     float(self.params["Detail_mult"].get()),
                     int(self.params["Detail_blur"].get()),
                     float(self.params["Blur_sigma"].get()),
-                    str(self.params["Detail_RGB"].get())
+                    str(self.params["Detail_RGB"].get()),
+                    float(self.params["Sobel_ratio"].get()),
+                    int(self.params["guided_blur"].get()),
+                    int(self.params["eps"].get()),
+                    int(self.params["loop"].get())
                 )
                 
                 # 미리보기 이미지 표시
@@ -587,7 +623,7 @@ class LineartWindow:
         # 왼쪽 이미지 프레임
         self.image_frame = tk.Frame(self.main_frame, width=250, height=250)
         self.image_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 10))
-        self.image_frame.pack_propagate(False)  # 프레임 크기 고정
+        self.image_frame.pack_propagate(True)  # 프레임 크기 고정
         
         # 이미지 레이블
         self.image_label = tk.Label(self.image_frame)
@@ -776,10 +812,22 @@ class LineartWindow:
         self.window.focus_force()
 
     def display_image(self, image):
+        
         # 이미지 크기 조정
-        display_size = (230, 230)  # 여백을 위해 프레임보다 작게 설정
+        display_size = (768, 768)  # 여백을 위해 프레임보다 작게 설정
         image_copy = image.copy()
         image_copy.thumbnail(display_size, Image.Resampling.LANCZOS)
+        
+        # 이미지 크기 가져오기
+        image_width, image_height = image_copy.size
+        
+         # 창 너비를 이미지와 UI 요소가 모두 보이도록 조정
+        min_window_width = 800  # 기본 창 너비
+        required_width = image_width + 500  # 여유 공간을 더해 전체 창 크기 설정
+        
+        # 창 크기 자동 조정
+        new_width = max(min_window_width, required_width)
+        self.window.geometry(f"{new_width}x900")
         
         # PhotoImage로 변환
         photo = ImageTk.PhotoImage(image_copy)
@@ -797,10 +845,22 @@ class LineartWindow:
             image = Image.fromarray(image)
 
         # 미리보기 이미지 크기 조정
-        display_size = (230, 230)  # 여백을 위해 프레임보다 작게 설정
+        display_size = (768, 768)  # 여백을 위해 프레임보다 작게 설정
         image_copy = image.copy()
         image_copy.thumbnail(display_size, Image.Resampling.LANCZOS)
-
+        
+        # 이미지 크기 가져오기
+        image_width, image_height = image_copy.size
+        
+         # 창 너비를 이미지와 UI 요소가 모두 보이도록 조정
+        min_window_width = 800  # 기본 창 너비
+        required_width = image_width + 500  # 여유 공간을 더해 전체 창 크기 설정
+        
+        # 창 크기 자동 조정
+        new_width = max(min_window_width, required_width)
+        self.window.geometry(f"{new_width}x900")
+        
+        
         # PhotoImage로 변환
         preview_photo = ImageTk.PhotoImage(image_copy)
 
