@@ -79,7 +79,8 @@ https://github.com/facebookresearch/xformers#installing-xformers
 
   You can import it into programs like Blender, Unity, or Clip studio paint. 
 
-  ![image](https://github.com/user-attachments/assets/1276dc39-c807-40f2-8576-d9b609224c21)
+  ![image](https://github.com/user-attachments/assets/2a1c97a9-71fc-418f-bc3f-501c8acb49e5)
+
 
 
   Input_size: Specifies the resolution of the depth. Higher gives more detail, but uses more VRAM. 
@@ -88,15 +89,26 @@ https://github.com/facebookresearch/xformers#installing-xformers
 
   normal_min: Depths lower than this value are excluded from the normal map. 
 
+  Sobel_ratio : Mix ratio of sobel gradients used in normal map computation. The higher it is, the more depth, but the coarser it is. 
+  
+![image](https://github.com/user-attachments/assets/2e4c4dc4-75cc-48d7-bb48-e94a500fe871)
+
+
   metallic: Specifies the metallic value of the material. 
 
   roughness: Specifies the roughness value of the material. 
 
-  blur: Specifies the strength of the bilateral filter applied to the normal map. 
+  bilateral_blur: Specifies the strength of the bilateral filter applied to the normal map. 
 
   sigmaColor :	Filter sigma in the color space.
 
   sigmaSpace :	Filter sigma in the coordinate space.
+
+  guided_blur : Specifies the strength of the guided filter applied to the normal map.
+
+  loop : loop count of guided filter
+
+  eps : guided filter parameter. The higher the value, the smoother the surface.
 
   Background : Specifies the color to fill in the background if the input image has an alpha channel. It's more effective to use a color that contrasts with the color of the object.  
 
