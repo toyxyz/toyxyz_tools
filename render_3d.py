@@ -9,6 +9,7 @@ import os
 os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
 import cv2
 import tifffile
+from cv2.ximgproc import guidedFilter
 
 from depth_anything_v2.dpt import DepthAnythingV2
 
@@ -40,7 +41,7 @@ def multiply_image(image_a, image_b, blend_factor):
     return blended_image
 
 
-def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, normal_min, mat_metallic, mat_roughness, normal_blur, blur_sigmacolor, blur_sigmaspace, depth_encoder, bg_color, enable_texture, show_preview, upscale_normal, upscale_model, save_mesh, use_path, tile_n, texture_path, detail_m, detail_b, detail_s, detail_c):
+def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, normal_min, mat_metallic, mat_roughness, normal_blur, blur_sigmacolor, blur_sigmaspace, depth_encoder, bg_color, enable_texture, show_preview, upscale_normal, upscale_model, save_mesh, use_path, tile_n, texture_path, detail_m, detail_b, detail_s, detail_c, sobel_ratio, guided_blur, guided_eps, guided_loop):
 
 
     # determine model paths
@@ -173,7 +174,7 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
 
 
 
-    def get_surface_normal_by_depth(depth, depth_m, K=None):
+    def get_surface_normal_by_depth(depth, depth_m, mix_ratio, K=None):
         """
         depth: (h, w) of float, the unit of depth is meter
         K: (3, 3) of float, the depth camera's intrinsic
@@ -184,7 +185,19 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
         #depth_safe = np.where(depth == 0, np.finfo(np.float32).eps, depth)
         depth_safe = np.where(depth <= depth_m, np.finfo(np.float32).eps, depth)
 
-        dz_dv, dz_du = np.gradient(depth_safe)
+        #dz_dv, dz_du = np.gradient(depth_safe)
+        
+        # np.gradient 계산
+        dz_dv_grad, dz_du_grad = np.gradient(depth_safe)
+        
+        # sobel 계산
+        dz_du_sobel = cv2.Sobel(depth_safe, cv2.CV_32F, 1, 0, ksize=3)
+        dz_dv_sobel = cv2.Sobel(depth_safe, cv2.CV_32F, 0, 1, ksize=3)
+        
+        # 그래디언트 혼합
+        dz_du = mix_ratio * dz_du_sobel + (1 - mix_ratio) * dz_du_grad
+        dz_dv = mix_ratio * dz_dv_sobel + (1 - mix_ratio) * dz_dv_grad
+        
         du_dx = fx / depth_safe
         dv_dy = fy / depth_safe
 
@@ -212,18 +225,27 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
     vis_normal = lambda normal: np.uint8((normal + 1) / 2 * 255)[..., ::-1]
 
     # 법선 맵 계산
-    normal1 = get_surface_normal_by_depth(depth, depth_min, K)
-    
-    if normal_blur <= 0:
-        normal_blur = 1
-    
+    normal1 = get_surface_normal_by_depth(depth, depth_min, sobel_ratio, K)
+   
     if blur_sigmacolor <= 0:
         blur_sigmacolor = 1
     
     if blur_sigmaspace <= 0:
         blur_sigmaspace =1
-
-    normal1_blurred = cv2.bilateralFilter(vis_normal(normal1), normal_blur, blur_sigmacolor, blur_sigmaspace)
+        
+    normal1_blurred = vis_normal(normal1)
+    
+    if guided_loop > 0 :
+        
+        for _ in range(guided_loop):
+    
+            if guided_blur > 0:
+            
+                normal1_blurred = cv2.ximgproc.guidedFilter(vis_normal(normal1), normal1_blurred, guided_blur, guided_eps)
+    
+    if normal_blur > 0:
+    
+        normal1_blurred = cv2.bilateralFilter(normal1_blurred, normal_blur, blur_sigmacolor, blur_sigmaspace)
 
     outputs = np.array(normal1_blurred).astype(np.float32) / 255.0
     outputs[..., 1] = 1.0 - outputs[..., 1] #Flip green channel
