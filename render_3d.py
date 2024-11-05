@@ -191,8 +191,8 @@ def render_depth_normal_mesh(input_img, input_size, out_dir, normal_depth, norma
         dz_dv_grad, dz_du_grad = np.gradient(depth_safe)
         
         # sobel 계산
-        dz_du_sobel = cv2.Sobel(depth_safe, cv2.CV_32F, 1, 0, ksize=3)
-        dz_dv_sobel = cv2.Sobel(depth_safe, cv2.CV_32F, 0, 1, ksize=3)
+        dz_du_sobel = cv2.Sobel(depth_safe, cv2.CV_32F, 1, 0, ksize=1)
+        dz_dv_sobel = cv2.Sobel(depth_safe, cv2.CV_32F, 0, 1, ksize=1)
         
         # 그래디언트 혼합
         dz_du = mix_ratio * dz_du_sobel + (1 - mix_ratio) * dz_du_grad
